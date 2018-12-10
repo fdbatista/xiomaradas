@@ -29,31 +29,43 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::$app->name,
+        'brandLabel' => '<i class="fa fa-home"></i>Xiomaradas',
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+    
+    $menuItems = [];
+    
+    if (Yii::$app->user->isGuest) {
+        $menuItems[] = ['label' => '<i class="fa fa-home"></i>Home', 'url' => ['/site/index']];
+        $menuItems[] = ['label' => '<i class="fa fa-info-circle"></i>About', 'url' => ['/site/about']];
+        $menuItems[] = ['label' => '<i class="fa fa-sign-in-alt"></i>Login', 'url' => ['/site/login']];
+    } else {
+        if (Yii::$app->user->identity->isAdmin()) {
+            $menuItems[] = [
+            'label' => '<i class="fa fa-cog"></i>Administrar',
+            'items' => [
+                 ['label' => 'Categor&iacute;as', 'url' => ['/categories']],
+                 ['label' => 'Eventos', 'url' => ['/events']],
+                 ['label' => 'Tipos de evidencia', 'url' => ['/evidence-types']],
+            ]
+        ];
+        }
+        $menuItems[] = [
+            'label' => '<i class="fa fa-user"></i>Mi cuenta',
+            'items' => [
+                 '<li class="dropdown-header">' . Yii::$app->user->identity->username . '</li>',
+                 '<li>' . Html::beginForm(['/site/logout'], 'post') . Html::submitButton('Logout', ['style' => 'width: 100%; text-align: left; background: transparent; border: none; margin: auto auto 10px 10px;']). Html::endForm() . '</li>'
+            ],
+        ];
+    }
+    
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            ['label' => 'Home', 'url' => ['/site/index']],
-            ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/site/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/site/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
+        'items' => $menuItems,
+        'encodeLabels' => false,
     ]);
     NavBar::end();
     ?>
@@ -69,7 +81,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
+        <p class="pull-left">&copy; FDB <?= date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>

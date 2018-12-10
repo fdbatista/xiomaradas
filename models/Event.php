@@ -1,0 +1,57 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+
+/**
+ * This is the model class for table "event".
+ *
+ * @property int $id
+ * @property string $date
+ * @property string $description
+ *
+ * @property Evidence[] $evidences
+ */
+class Event extends \yii\db\ActiveRecord
+{
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'event';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['date', 'description'], 'required'],
+            [['date'], 'safe'],
+            [['description'], 'string'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'date' => 'Date',
+            'description' => 'Description',
+        ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEvidences()
+    {
+        return $this->hasMany(Evidence::className(), ['event_id' => 'id']);
+    }
+}
